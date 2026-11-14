@@ -2,6 +2,7 @@
 * Optimise write performance particularly for partial buffer writes.
 * Add inlining hints to improve read performance.
 * Fix client handshakes for WebSocket URLs with a query string and no path.
+* `Display for Frame` writes the payload hex straight to the formatter instead of building a payload-sized `String` first.
 
 # 0.30.0
 
