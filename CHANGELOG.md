@@ -1,3 +1,7 @@
+# Unreleased
+
+* Add `protocol::MaskSource` and `WebSocket`/`WebSocketContext::set_mask_source`: a client draws its frame masks from the installed source. New default feature `rand` (implied by `handshake`); without it the crate links no `rand` and a client send with no source installed fails with `ProtocolError::MissingMaskSource`.
+
 # 0.30.0
 
 * Reject non-compliant clients (incorrect `Sec-WebSocket-Key` length/format) on the server side.
