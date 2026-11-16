@@ -795,7 +795,7 @@ impl WebSocketContext {
                 // 5.  If the data is being sent by the client, the frame(s) MUST be
                 // masked as defined in Section 5.3. (RFC 6455)
                 let mask = match self.mask_source.as_mut() {
-                    Some(source) => mask_from(source.0.as_mut()),
+                    Some(source) => mask_from(source.0.as_mut())?,
                     #[cfg(feature = "rand")]
                     None => generate_mask(),
                     #[cfg(not(feature = "rand"))]

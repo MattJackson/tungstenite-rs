@@ -4,15 +4,16 @@
 /// without that feature has no fallback: install a source with `WebSocketContext::set_mask_source` or a client
 /// send fails with `ProtocolError::MissingMaskSource`.
 pub trait MaskSource: Send + Sync {
-    /// Fill `buf` with unpredictable bytes.
-    fn fill(&mut self, buf: &mut [u8]);
+    /// Fill `buf` with unpredictable bytes, or fail: a failed draw fails the send (an `Error::Io`), never a
+    /// predictable mask.
+    fn fill(&mut self, buf: &mut [u8]) -> std::io::Result<()>;
 }
 
 /// Draw one frame mask from `source`.
-pub(crate) fn mask_from(source: &mut dyn MaskSource) -> [u8; 4] {
+pub(crate) fn mask_from(source: &mut dyn MaskSource) -> std::io::Result<[u8; 4]> {
     let mut mask = [0u8; 4];
-    source.fill(&mut mask);
-    mask
+    source.fill(&mut mask)?;
+    Ok(mask)
 }
 
 /// Generate a random frame mask.
