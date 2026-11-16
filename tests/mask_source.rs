@@ -30,11 +30,12 @@ impl Write for Wire {
 struct Counting(u8);
 
 impl MaskSource for Counting {
-    fn fill(&mut self, buf: &mut [u8]) {
+    fn fill(&mut self, buf: &mut [u8]) -> io::Result<()> {
         for b in buf {
             *b = self.0;
             self.0 = self.0.wrapping_add(1);
         }
+        Ok(())
     }
 }
 
@@ -77,4 +78,24 @@ fn with_rand_and_no_source_the_crate_still_masks() {
     let mut ws = WebSocket::from_raw_socket(Wire::default(), Role::Client, None);
     ws.send(Message::text("hi")).unwrap();
     assert_eq!(ws.get_ref().0[1], 0x82);
+}
+
+/// A source whose draw fails.
+struct Failing;
+
+impl MaskSource for Failing {
+    fn fill(&mut self, _: &mut [u8]) -> io::Result<()> {
+        Err(io::Error::other("no entropy"))
+    }
+}
+
+#[test]
+fn a_failed_draw_fails_the_send_and_writes_nothing() {
+    let mut ws = WebSocket::from_raw_socket(Wire::default(), Role::Client, None);
+    ws.set_mask_source(Failing);
+    match ws.send(Message::text("hi")) {
+        Err(tungstenite::Error::Io(_)) => {}
+        other => panic!("want Error::Io, got {other:?}"),
+    }
+    assert!(ws.get_ref().0.is_empty());
 }
