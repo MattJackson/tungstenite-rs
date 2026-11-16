@@ -1,4 +1,22 @@
+/// Where a client's frame masks come from (RFC 6455 section 5.3: four unpredictable bytes per client frame).
+///
+/// A context with no source installed draws from the crate's `rand` (feature `rand`, on by default). A build
+/// without that feature has no fallback: install a source with `WebSocketContext::set_mask_source` or a client
+/// send fails with `ProtocolError::MissingMaskSource`.
+pub trait MaskSource: Send + Sync {
+    /// Fill `buf` with unpredictable bytes.
+    fn fill(&mut self, buf: &mut [u8]);
+}
+
+/// Draw one frame mask from `source`.
+pub(crate) fn mask_from(source: &mut dyn MaskSource) -> [u8; 4] {
+    let mut mask = [0u8; 4];
+    source.fill(&mut mask);
+    mask
+}
+
 /// Generate a random frame mask.
+#[cfg(feature = "rand")]
 #[inline]
 pub fn generate_mask() -> [u8; 4] {
     rand::random()

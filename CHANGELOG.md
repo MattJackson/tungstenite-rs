@@ -1,3 +1,7 @@
+# Unreleased (busbar fork)
+
+* Add `protocol::MaskSource` and `WebSocket`/`WebSocketContext::set_mask_source`: a client draws its frame masks from the installed source. New default feature `rand` (implied by `handshake`); without it the crate links no `rand` and a client send with no source installed fails with `ProtocolError::MissingMaskSource`.
+
 # 0.29.0
 
 * Update MSRV to `1.71` due to `syn` (the dependency of `thiserror`) requiring it.
