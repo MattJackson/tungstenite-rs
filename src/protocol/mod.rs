@@ -11,11 +11,10 @@ pub use self::{
 
 #[cfg(feature = "rand")]
 use self::frame::generate_mask;
-use self::frame::mask_from;
 use self::{
     frame::{
         coding::{CloseCode, Control as OpCtl, Data as OpData, OpCode},
-        Frame, FrameCodec,
+        mask_from, Frame, FrameCodec,
     },
     message::{IncompleteMessage, MessageType},
 };
